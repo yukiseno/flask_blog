@@ -224,6 +224,22 @@ def reject_user(user_id):
 # Initialize database
 with app.app_context():
     db.create_all()
+    
+    # Create default admin account if it doesn't exist
+    admin = User.query.filter_by(username='admin').first()
+    if not admin:
+        admin_user = User(username='admin', email='admin@example.com', is_admin=True, is_approved=True)
+        admin_user.set_password('admin123')
+        db.session.add(admin_user)
+        db.session.commit()
+        print("✓ Default admin account created")
+    else:
+        # Ensure admin has correct settings (in case of old data)
+        if not admin.is_admin:
+            admin.is_admin = True
+        if not admin.is_approved:
+            admin.is_approved = True
+        db.session.commit()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8001)))
