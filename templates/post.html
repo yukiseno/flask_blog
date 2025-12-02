@@ -1,0 +1,20 @@
+{% extends "base.html" %} {% block title %}{{ post.title }} - Flask Blog{%
+endblock %} {% block content %}
+<div class="post-card">
+  <h2>{{ post.title }}</h2>
+  <div class="post-meta">
+    By {{ post.author }} | {{ post.created_at.strftime('%B %d, %Y at %I:%M %p')
+    }}
+  </div>
+  <div style="margin-top: 20px; white-space: pre-wrap">{{ post.content }}</div>
+  <div style="margin-top: 25px">
+    <a href="{{ url_for('index') }}" class="btn">Back to Home</a>
+    <a
+      href="{{ url_for('delete', post_id=post.id) }}"
+      class="btn btn-danger"
+      onclick="return confirm('Are you sure?')"
+      >Delete Post</a
+    >
+  </div>
+</div>
+{% endblock %}

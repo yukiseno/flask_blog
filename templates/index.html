@@ -1,0 +1,30 @@
+{% extends "base.html" %} {% block title %}Home - Flask Blog{% endblock %} {%
+block content %}
+<h2 style="margin-bottom: 20px">Recent Posts</h2>
+{% if posts %} {% for post in posts %}
+<div class="post-card">
+  <h2>{{ post.title }}</h2>
+  <div class="post-meta">
+    By {{ post.author }} | {{ post.created_at.strftime('%B %d, %Y at %I:%M %p')
+    }}
+  </div>
+  <p>
+    {{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}
+  </p>
+  <div style="margin-top: 15px">
+    <a href="{{ url_for('post', post_id=post.id) }}" class="btn">Read More</a>
+    <a
+      href="{{ url_for('delete', post_id=post.id) }}"
+      class="btn btn-danger"
+      onclick="return confirm('Are you sure?')"
+      >Delete</a
+    >
+  </div>
+</div>
+{% endfor %} {% else %}
+<div class="post-card">
+  <p>
+    No posts yet. <a href="{{ url_for('create') }}">Create the first one!</a>
+  </p>
+</div>
+{% endif %} {% endblock %}
