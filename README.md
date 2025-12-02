@@ -10,9 +10,15 @@ A full-featured blog application built with Flask, featuring user authentication
   - Password hashing for security
 - **Blog Post Management**
   - Create, read, and delete blog posts
-  - Only authenticated users can create posts
+  - Admin approval system for user post creation
+  - Only authenticated and approved users can create posts
   - Users can only delete their own posts
   - Posts display author information and timestamps
+- **Admin Panel**
+  - Admin approval system for new users
+  - View pending user approvals
+  - Approve or reject user accounts
+  - Manage all users and their posting status
 - **User Interface**
   - Clean, responsive design
   - Flash messages for user feedback
@@ -43,7 +49,8 @@ flask_blog/
     ├── post.html         # Individual post view
     ├── create.html       # Create post form
     ├── login.html        # Login page
-    └── register.html     # Registration page
+    ├── register.html     # Registration page
+    └── admin.html        # Admin dashboard
 ```
 
 ## Installation
@@ -89,13 +96,36 @@ python app.py
 ### First Time Setup
 
 1. Register a new account at `/register`
-2. Log in with your credentials
-3. Create your first blog post
-4. Only you can delete your own posts
+2. Wait for admin approval
+3. Once approved, log in with your credentials
+4. Create your first blog post
+5. Only you can delete your own posts
+
+### Admin Features
+
+The admin can access the admin dashboard at `/admin` to:
+- View all pending user approvals
+- Approve users to allow them to create posts
+- Reject users (removes their account)
+- See all registered users and their approval status
+
+**Default admin account:**
+- Username: `admin`
+- Password: `adminiI!`
+
+(Change this password immediately in production!)
+
+### User Workflow
+
+1. New users register at `/register`
+2. Users are created with `is_approved = False`
+3. Unapproved users cannot create posts
+4. Admin approves users via the Admin Dashboard
+5. Approved users can now create and manage posts
 
 ### Creating Posts
 
-- Click "Create Post" in the navigation (only visible when logged in)
+- Click "Create Post" in the navigation (only visible when logged in and approved)
 - Fill in the title and content
 - Submit to publish
 
@@ -117,6 +147,8 @@ The application uses SQLite for development. The database file (`blog.db`) is au
 - username (Unique)
 - email (Unique)
 - password_hash
+- is_admin (Boolean)
+- is_approved (Boolean)
 - posts (Relationship)
 
 **Post**
@@ -189,6 +221,8 @@ python app.py
 - [ ] Post images/media upload
 - [ ] Email verification for registration
 - [ ] Password reset functionality
+- [ ] Email notifications for admin approvals
+- [ ] User ban/suspend feature
 
 ## Learning Resources
 
