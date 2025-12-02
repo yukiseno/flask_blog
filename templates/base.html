@@ -29,6 +29,7 @@
       }
       header h1 {
         text-align: center;
+        font-size: 2em;
       }
       nav {
         text-align: center;
@@ -39,9 +40,18 @@
         text-decoration: none;
         margin: 0 15px;
         font-weight: bold;
+        padding: 8px 16px;
+        border-radius: 5px;
+        transition: background 0.3s;
       }
       nav a:hover {
         color: #3498db;
+      }
+      .user-info {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 0.9em;
+        opacity: 0.9;
       }
       .flash {
         padding: 15px;
@@ -74,6 +84,10 @@
         font-size: 0.9em;
         margin-bottom: 15px;
       }
+      .post-meta .author {
+        color: #3498db;
+        font-weight: bold;
+      }
       .btn {
         display: inline-block;
         padding: 10px 20px;
@@ -94,6 +108,12 @@
       .btn-danger:hover {
         background: #c0392b;
       }
+      .btn-secondary {
+        background: #95a5a6;
+      }
+      .btn-secondary:hover {
+        background: #7f8c8d;
+      }
       form {
         background: white;
         padding: 25px;
@@ -107,8 +127,11 @@
         display: block;
         margin-bottom: 5px;
         font-weight: bold;
+        color: #2c3e50;
       }
       input[type="text"],
+      input[type="email"],
+      input[type="password"],
       textarea {
         width: 100%;
         padding: 10px;
@@ -116,9 +139,30 @@
         border-radius: 5px;
         font-size: 1em;
       }
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #3498db;
+      }
       textarea {
         min-height: 200px;
         resize: vertical;
+        font-family: inherit;
+      }
+      .auth-container {
+        max-width: 400px;
+        margin: 50px auto;
+      }
+      .auth-links {
+        text-align: center;
+        margin-top: 15px;
+      }
+      .auth-links a {
+        color: #3498db;
+        text-decoration: none;
+      }
+      .auth-links a:hover {
+        text-decoration: underline;
       }
     </style>
   </head>
@@ -128,10 +172,20 @@
         <h1>Flask Blog</h1>
         <nav>
           <a href="{{ url_for('index') }}">Home</a>
+          {% if current_user.is_authenticated %}
           <a href="{{ url_for('create') }}">Create Post</a>
+          <a href="{{ url_for('logout') }}">Logout</a>
+          {% else %}
+          <a href="{{ url_for('login') }}">Login</a>
+          <a href="{{ url_for('register') }}">Register</a>
+          {% endif %}
         </nav>
+        {% if current_user.is_authenticated %}
+        <div class="user-info">Logged in as: {{ current_user.username }}</div>
+        {% endif %}
       </div>
     </header>
+
     <div class="container">
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %} {% for category, message in messages %}
