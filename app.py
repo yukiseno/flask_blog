@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from functools import wraps
 import os
 
 app = Flask(__name__)
@@ -22,6 +23,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_approved = db.Column(db.Boolean, default=False)
     posts = db.relationship('Post', backref='author', lazy=True, cascade='all, delete-orphan')
     
     def set_password(self, password):
@@ -40,6 +43,16 @@ class Post(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# Admin decorator
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            flash('You do not have permission to access this page.', 'error')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Routes
 @app.route('/')
@@ -111,6 +124,10 @@ def post(post_id):
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create():
+    if not current_user.is_approved:
+        flash('Your account needs to be approved by an admin before you can create posts.', 'error')
+        return redirect(url_for('index'))
+    
     if request.method == 'POST':
         title = request.form['title']
         content = request.form['content']
@@ -141,6 +158,36 @@ def delete(post_id):
     db.session.commit()
     flash('Post deleted successfully!', 'success')
     return redirect(url_for('index'))
+
+@app.route('/admin')
+@admin_required
+def admin():
+    pending_users = User.query.filter_by(is_approved=False).all()
+    all_users = User.query.all()
+    return render_template('admin.html', pending_users=pending_users, all_users=all_users)
+
+@app.route('/admin/approve/<int:user_id>')
+@admin_required
+def approve_user(user_id):
+    user = User.query.get_or_404(user_id)
+    user.is_approved = True
+    db.session.commit()
+    flash(f'User {user.username} has been approved!', 'success')
+    return redirect(url_for('admin'))
+
+@app.route('/admin/reject/<int:user_id>')
+@admin_required
+def reject_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.is_admin:
+        flash('Cannot reject an admin user!', 'error')
+        return redirect(url_for('admin'))
+    
+    # Delete user's posts and then the user
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'User {user.username} has been rejected and deleted!', 'success')
+    return redirect(url_for('admin'))
 
 # Initialize database
 with app.app_context():
