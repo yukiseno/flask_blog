@@ -159,6 +159,38 @@ def delete(post_id):
     flash('Post deleted successfully!', 'success')
     return redirect(url_for('index'))
 
+@app.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        old_password = request.form['old_password']
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+        
+        # Verify old password
+        if not current_user.check_password(old_password):
+            flash('Current password is incorrect!', 'error')
+            return redirect(url_for('change_password'))
+        
+        # Check if new passwords match
+        if new_password != confirm_password:
+            flash('New passwords do not match!', 'error')
+            return redirect(url_for('change_password'))
+        
+        # Check password length
+        if len(new_password) < 6:
+            flash('New password must be at least 6 characters long!', 'error')
+            return redirect(url_for('change_password'))
+        
+        # Update password
+        current_user.set_password(new_password)
+        db.session.commit()
+        
+        flash('Password changed successfully!', 'success')
+        return redirect(url_for('index'))
+    
+    return render_template('change_password.html')
+
 @app.route('/admin')
 @admin_required
 def admin():

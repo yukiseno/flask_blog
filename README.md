@@ -111,9 +111,9 @@ The admin can access the admin dashboard at `/admin` to:
 
 **Default admin account:**
 - Username: `admin`
-- Password: `adminiI!`
+- Password: `admin123`
 
-(Change this password immediately in production!)
+(Note: You can change this password using the "Change Password" page once logged in!)
 
 ### User Workflow
 
