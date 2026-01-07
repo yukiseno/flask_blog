@@ -25,6 +25,24 @@ A full-featured blog application built with Flask, featuring user authentication
   - Separated CSS for maintainability
   - Professional styling with custom color scheme
 
+## Live Demo
+
+Try the live demo of Flask Blog: **[https://flask-blog-production.railway.app](https://flask-blog-production.railway.app)**
+
+### Demo Credentials
+
+You can test the application with the following accounts:
+
+- **Admin Account:**
+  - Username: `admin`
+  - Password: `admin123`
+
+- **Test User Account:**
+  - Username: `testuser`
+  - Password: `testuser123`
+
+Feel free to explore the features, create posts, and test the admin approval system. All demo data is reset periodically.
+
 ## Technologies Used
 
 - **Flask 3.0.0** - Web framework
