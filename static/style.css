@@ -110,6 +110,8 @@ nav a:hover {
   border: none;
   cursor: pointer;
   font-size: 1em;
+  vertical-align: middle;
+  line-height: 1;
 }
 
 .btn:hover {
